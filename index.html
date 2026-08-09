@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wuys Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0b14;
+    --bg-1:#12132218;
+    --ink-0:#f2f1fb;
+    --ink-1:#a6a8c7;
+    --ink-2:#6c6e93;
+    --blurple:#5865F2;
+    --violet:#9b6bf2;
+    --cyan:#5dd8e2;
+    --glass-border:rgba(255,255,255,0.09);
+    --glass-fill:rgba(255,255,255,0.045);
+    --radius:20px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 600px at 15% -10%, #2a2470 0%, transparent 60%),
+      radial-gradient(ellipse 800px 700px at 90% 10%, #0e3a4a 0%, transparent 55%),
+      radial-gradient(ellipse 1000px 800px at 50% 100%, #1a1440 0%, transparent 60%),
+      var(--bg-0);
+    color:var(--ink-0);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* noise texture for depth */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* ambient floating orbs following cursor slightly */
+  .orb{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    pointer-events:none;
+    z-index:0;
+    opacity:0.55;
+    transition:transform 1.2s cubic-bezier(.2,.7,.3,1);
+  }
+  .orb-1{width:520px;height:520px;background:radial-gradient(circle,var(--blurple),transparent 70%);top:-10%;left:-8%;}
+  .orb-2{width:460px;height:460px;background:radial-gradient(circle,var(--violet),transparent 70%);top:20%;right:-10%;}
+  .orb-3{width:400px;height:400px;background:radial-gradient(circle,var(--cyan),transparent 70%);bottom:-15%;left:30%;opacity:0.35;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px clamp(20px,5vw,64px);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    background:rgba(10,11,20,0.35);
+    border-bottom:1px solid var(--glass-border);
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:-0.01em;
+  }
+  .brand-mark{
+    width:30px;height:30px;
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.95rem;
+    box-shadow:0 0 22px rgba(88,101,242,0.55);
+  }
+  .legal-links{
+    display:flex;gap:10px;
+  }
+  .pill-btn{
+    font-family:'Inter',sans-serif;
+    font-size:0.82rem;
+    font-weight:500;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:8px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    text-decoration:none;
+    transition:all .25s ease;
+    backdrop-filter:blur(6px);
+  }
+  .pill-btn:hover{
+    color:var(--ink-0);
+    background:rgba(255,255,255,0.09);
+    border-color:rgba(255,255,255,0.18);
+    transform:translateY(-1px);
+  }
+
+  /* ---------- page transition overlay ---------- */
+  .page-veil{
+    position:fixed;inset:0;
+    z-index:200;
+    background:var(--bg-0);
+    display:flex;align-items:center;justify-content:center;
+    transform:translateY(100%);
+    pointer-events:none;
+  }
+  .page-veil.active{
+    animation:veilIn .55s cubic-bezier(.65,0,.35,1) forwards;
+    pointer-events:all;
+  }
+  @keyframes veilIn{
+    0%{transform:translateY(100%);}
+    100%{transform:translateY(0%);}
+  }
+  .veil-mark{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:1.4rem;
+    opacity:0;
+    animation:veilMark .5s ease forwards .15s;
+  }
+  @keyframes veilMark{
+    to{opacity:1;}
+  }
+
+  /* ---------- sections shared ---------- */
+  section{
+    position:relative;
+    z-index:2;
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 clamp(20px,5vw,64px);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding-top:90px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--cyan);
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:22px;
+    opacity:0;
+    animation:riseIn .7s ease forwards .1s;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;} 50%{opacity:0.3;}
+  }
+
+  h1.title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(3rem,9vw,6.2rem);
+    line-height:0.98;
+    letter-spacing:-0.03em;
+    background:linear-gradient(180deg,#ffffff 0%,#c9caea 60%,#9698c4 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    opacity:0;
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) forwards .25s;
+  }
+  .title-glow{
+    position:relative;
+  }
+  .title-glow::after{
+    content:"Wuys Bot";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,var(--blurple),var(--violet),var(--cyan));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:blur(30px);
+    opacity:0.5;
+    z-index:-1;
+  }
+
+  .subtitle{
+    max-width:560px;
+    margin:26px auto 0;
+    font-size:1.08rem;
+    line-height:1.6;
+    color:var(--ink-1);
+    opacity:0;
+    animation:riseIn .8s ease forwards .4s;
+  }
+  .subtitle b{color:var(--ink-0);font-weight:600;}
+
+  @keyframes riseIn{
+    from{opacity:0;transform:translateY(18px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  .hero-actions{
+    display:flex;
+    gap:14px;
+    margin-top:40px;
+    flex-wrap:wrap;
+    justify-content:center;
+    opacity:0;
+    animation:riseIn .8s ease forwards .55s;
+  }
+
+  .btn-primary{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    color:#fff;
+    background:linear-gradient(135deg,var(--blurple),#7289f4);
+    border:none;
+    padding:15px 30px;
+    border-radius:14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    box-shadow:0 8px 30px rgba(88,101,242,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition:transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease;
+    text-decoration:none;
+  }
+  .btn-primary:hover{
+    transform:translateY(-3px) scale(1.015);
+    box-shadow:0 14px 40px rgba(88,101,242,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .btn-primary:active{transform:translateY(-1px) scale(0.99);}
+
+  .btn-secondary{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    color:var(--ink-0);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:15px 28px;
+    border-radius:14px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    transition:all .25s ease;
+    text-decoration:none;
+  }
+  .btn-secondary:hover{
+    background:rgba(255,255,255,0.09);
+    border-color:rgba(255,255,255,0.2);
+    transform:translateY(-3px);
+  }
+
+  /* floating glass stat card under hero */
+  .hero-glass{
+    margin-top:64px;
+    display:flex;
+    gap:0;
+    border-radius:var(--radius);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    overflow:hidden;
+    opacity:0;
+    animation:riseIn .8s ease forwards .7s;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  .hero-stat{
+    padding:22px 34px;
+    text-align:left;
+    border-right:1px solid var(--glass-border);
+  }
+  .hero-stat:last-child{border-right:none;}
+  .hero-stat .num{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:1.5rem;
+    color:var(--ink-0);
+  }
+  .hero-stat .lab{
+    font-size:0.76rem;
+    color:var(--ink-2);
+    margin-top:2px;
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- section heading ---------- */
+  .sec-head{
+    text-align:center;
+    margin:0 auto 56px;
+    max-width:640px;
+  }
+  .sec-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--violet);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .sec-head h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(1.8rem,4vw,2.6rem);
+    letter-spacing:-0.02em;
+    color:var(--ink-0);
+    margin-bottom:14px;
+  }
+  .sec-head p{
+    color:var(--ink-1);
+    font-size:1rem;
+    line-height:1.6;
+  }
+
+  /* ---------- features ---------- */
+  .features{
+    padding-top:150px;
+    padding-bottom:130px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+  }
+  .card{
+    padding:30px 26px;
+    border-radius:18px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+    position:relative;
+    overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1), border-color .35s ease, background .35s ease;
+    opacity:0;
+    transform:translateY(24px);
+  }
+  .card.in-view{
+    animation:cardIn .7s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes cardIn{
+    to{opacity:1;transform:translateY(0);}
+  }
+  .card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.065);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:-40%;left:-20%;
+    width:60%;height:180%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.06), transparent);
+    transform:rotate(20deg);
+    transition:transform .6s ease;
+    pointer-events:none;
+  }
+  .card:hover::before{transform:rotate(20deg) translateX(120%);}
+
+  .card-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.25rem;
+    margin-bottom:18px;
+    background:linear-gradient(135deg, rgba(88,101,242,0.25), rgba(155,107,242,0.15));
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .card h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:1.12rem;
+    margin-bottom:9px;
+    color:var(--ink-0);
+  }
+  .card p{
+    color:var(--ink-1);
+    font-size:0.9rem;
+    line-height:1.55;
+  }
+  .card .tag{
+    display:inline-block;
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--ink-2);
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--glass-border);
+    padding:3px 9px;
+    border-radius:6px;
+  }
+
+  /* ---------- vs / comparison ---------- */
+  .vs-section{
+    padding-bottom:150px;
+  }
+  .vs-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  .vs-row{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:18px;
+    padding:20px 26px;
+    border-radius:16px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    opacity:0;
+    transform:translateY(18px);
+  }
+  .vs-row.in-view{
+    animation:cardIn .6s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .vs-need{
+    text-align:right;
+    color:var(--ink-1);
+    font-size:0.92rem;
+    line-height:1.5;
+  }
+  .vs-need b{color:var(--ink-0);font-weight:600;}
+  .vs-need .instead{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--ink-2);
+    margin-top:4px;
+    text-decoration:line-through;
+    text-decoration-color:rgba(237,66,69,0.5);
+  }
+  .vs-arrow{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;height:38px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+    box-shadow:0 0 18px rgba(88,101,242,0.4);
+    font-size:0.95rem;
+    flex-shrink:0;
+  }
+  .vs-answer{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    color:var(--ink-0);
+  }
+  .vs-answer .check{
+    color:var(--cyan);
+    font-size:1.05rem;
+    flex-shrink:0;
+  }
+
+  /* signature: customize spotlight */
+  .spotlight{
+    max-width:820px;
+    margin:64px auto 0;
+    padding:2px;
+    border-radius:26px;
+    background:linear-gradient(135deg,var(--blurple),var(--violet),var(--cyan));
+    opacity:0;
+    transform:translateY(18px);
+  }
+  .spotlight.in-view{
+    animation:cardIn .7s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .spotlight-inner{
+    border-radius:24px;
+    background:#0d0e1a;
+    padding:48px 44px;
+    position:relative;
+    overflow:hidden;
+  }
+  .spotlight-inner::before{
+    content:"";
+    position:absolute;
+    width:360px;height:360px;
+    background:radial-gradient(circle,var(--violet),transparent 70%);
+    filter:blur(70px);
+    top:-140px;right:-100px;
+    opacity:0.45;
+  }
+  .spotlight-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    background:rgba(93,216,226,0.1);
+    border:1px solid rgba(93,216,226,0.25);
+    padding:5px 12px;
+    border-radius:999px;
+    margin-bottom:20px;
+  }
+  .spotlight-inner h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(1.5rem,3.5vw,2rem);
+    line-height:1.25;
+    letter-spacing:-0.015em;
+    margin-bottom:16px;
+    max-width:560px;
+  }
+  .spotlight-inner p{
+    color:var(--ink-1);
+    font-size:0.98rem;
+    line-height:1.65;
+    max-width:520px;
+    margin-bottom:26px;
+  }
+  .spotlight-chips{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:0.85rem;
+    color:var(--ink-0);
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    padding:9px 16px;
+    border-radius:12px;
+  }
+  .chip .price{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--cyan);
+    font-weight:500;
+  }
+
+  @media (max-width:640px){
+    .vs-row{grid-template-columns:1fr;text-align:center;}
+    .vs-need{text-align:center;}
+    .vs-arrow{margin:0 auto;transform:rotate(90deg);}
+  }
+
+  /* ---------- recommended stack ---------- */
+  .stack-section{
+    padding-bottom:150px;
+  }
+  .stack-wrap{
+    max-width:820px;
+    margin:0 auto;
+  }
+  .stack-blurb{
+    text-align:center;
+    color:var(--ink-1);
+    font-size:1rem;
+    line-height:1.65;
+    max-width:600px;
+    margin:0 auto 44px;
+  }
+  .stack-blurb b{color:var(--ink-0);font-weight:600;}
+  .stack-row{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .stack-card{
+    flex:1 1 170px;
+    max-width:220px;
+    padding:26px 20px;
+    border-radius:16px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    text-align:center;
+    opacity:0;
+    transform:translateY(18px);
+  }
+  .stack-card.in-view{
+    animation:cardIn .6s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .stack-card.highlight{
+    background:linear-gradient(135deg, rgba(88,101,242,0.18), rgba(155,107,242,0.1));
+    border-color:rgba(255,255,255,0.18);
+  }
+  .stack-icon{
+    width:46px;height:46px;
+    margin:0 auto 14px;
+    border-radius:13px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--glass-border);
+  }
+  .stack-card.highlight .stack-icon{
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+    box-shadow:0 0 18px rgba(88,101,242,0.4);
+  }
+  .stack-card h4{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:0.95rem;
+    color:var(--ink-0);
+    margin-bottom:5px;
+  }
+  .stack-card p{
+    font-size:0.78rem;
+    color:var(--ink-2);
+    line-height:1.4;
+  }
+  .stack-plus{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.3rem;
+    color:var(--ink-2);
+    flex:0 0 auto;
+    padding:0 2px;
+  }
+  .stack-footnote{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:32px;
+    flex-wrap:wrap;
+    text-align:center;
+  }
+  .stack-footnote .foot-pill{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--cyan);
+    background:rgba(93,216,226,0.08);
+    border:1px solid rgba(93,216,226,0.22);
+    padding:7px 16px;
+    border-radius:999px;
+  }
+
+  @media (max-width:640px){
+    .stack-row{flex-direction:column;align-items:center;}
+    .stack-card{max-width:280px;width:100%;}
+    .stack-plus{transform:rotate(90deg);padding:2px 0;}
+  }
+
+  /* ---------- cta band ---------- */
+  .cta-band{
+    padding:100px 0 140px;
+    text-align:center;
+  }
+  .cta-glass{
+    max-width:780px;
+    margin:0 auto;
+    padding:64px 40px;
+    border-radius:28px;
+    background:linear-gradient(135deg, rgba(88,101,242,0.14), rgba(155,107,242,0.08));
+    border:1px solid rgba(255,255,255,0.12);
+    backdrop-filter:blur(20px) saturate(150%);
+    -webkit-backdrop-filter:blur(20px) saturate(150%);
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-glass::before{
+    content:"";
+    position:absolute;
+    width:300px;height:300px;
+    background:radial-gradient(circle,var(--blurple),transparent 70%);
+    filter:blur(60px);
+    top:-100px;right:-80px;
+    opacity:0.5;
+  }
+  .cta-glass h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.3rem);
+    margin-bottom:14px;
+    letter-spacing:-0.02em;
+  }
+  .cta-glass p{
+    color:var(--ink-1);
+    margin-bottom:32px;
+    font-size:1rem;
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    padding:36px clamp(20px,5vw,64px) 44px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:1px solid var(--glass-border);
+    max-width:1180px;
+    margin:0 auto;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .footer-left{
+    display:flex;align-items:center;gap:10px;
+    color:var(--ink-2);
+    font-size:0.85rem;
+  }
+  .dev-tag{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:5px 12px;
+    border-radius:8px;
+    font-size:0.8rem;
+  }
+  .footer-links{
+    display:flex;gap:22px;
+  }
+  .footer-links a{
+    color:var(--ink-2);
+    text-decoration:none;
+    font-size:0.85rem;
+    transition:color .2s ease;
+  }
+  .footer-links a:hover{color:var(--ink-0);}
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+    .orb{transition:none;}
+  }
+
+  @media (max-width:860px){
+    .grid{grid-template-columns:1fr;}
+    .hero-glass{flex-direction:column;}
+    .hero-stat{border-right:none;border-bottom:1px solid var(--glass-border);}
+    .hero-stat:last-child{border-bottom:none;}
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1" id="orb1"></div>
+<div class="orb orb-2" id="orb2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page-veil" id="veil">
+  <div class="veil-mark">Wuys Bot</div>
+</div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">W</div>
+    Wuys Bot
+  </div>
+  <div class="legal-links">
+    <a href="https://wuysbot.eu.cc/tos" class="pill-btn" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="https://wuysbot.eu.cc/privacypolicy" class="pill-btn" target="_blank" rel="noopener">Privacy Policy</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="eyebrow"><span class="dot"></span> v1.9.3 · online now</div>
+  <h1 class="title title-glow">Wuys Bot</h1>
+  <p class="subtitle">
+    One Discord bot that handles <b>moderation</b>, <b>welcome & goodbye messages</b>,
+    <b>detailed logging</b>, <b>tickets</b>, and a full <b>economy / casino</b> system —
+    all in one server, no extra bots needed.
+  </p>
+  <div class="hero-actions">
+    <a href="https://discord.com/oauth2/authorize?client_id=1510135549573206036&permissions=8&scope=bot%20applications.commands" class="btn-primary" id="addBotBtn" target="_blank" rel="noopener">
+      <span>➕</span> Add bot to server
+    </a>
+    <a href="#features" class="btn-secondary" data-nav>
+      See features ↓
+    </a>
+  </div>
+
+  <div class="hero-glass">
+    <div class="hero-stat">
+      <div class="num">6+</div>
+      <div class="lab">feature groups</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">SQLite</div>
+      <div class="lab">stable storage, WAL mode</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">24/7</div>
+      <div class="lab">ready to serve your server</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="sec-head">
+    <div class="sec-eyebrow">Inside Wuys Bot</div>
+    <h2>A full server management toolkit</h2>
+    <p>Every feature is built for how servers actually run, not just a list of commands for show.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="card-icon">🛡️</div>
+      <h3>Moderation & Warnings</h3>
+      <p>Warn, track infractions, and handle members directly from the server — every action gets logged.</p>
+      <span class="tag">/warn · /warnings</span>
+    </div>
+    <div class="card"><div class="card-icon">👋</div>
+      <h3>Welcome & Goodbye</h3>
+      <p>Custom welcome messages, plus separate goodbye messages for each case: leaving, kicked, or banned.</p>
+      <span class="tag">/setwelcome · /setgoodbye</span>
+    </div>
+    <div class="card"><div class="card-icon">📜</div>
+      <h3>Detailed Logging</h3>
+      <p>Toggle logging per event type: messages, roles, channels, nicknames, voice — sent via a per-server webhook.</p>
+      <span class="tag">/logtoggle · /logstatus</span>
+    </div>
+    <div class="card"><div class="card-icon">🎟️</div>
+      <h3>Ticket System</h3>
+      <p>Private support channels for each request, with full transcripts saved for later reference.</p>
+      <span class="tag">Auto transcript</span>
+    </div>
+    <div class="card"><div class="card-icon">🪙</div>
+      <h3>Economy & Casino</h3>
+      <p>Wallet, bank, daily jobs, and a whole set of minigames — a full in-server economy for your community.</p>
+      <span class="tag">/daily · /work · /blackjack</span>
+    </div>
+    <div class="card"><div class="card-icon">⚙️</div>
+      <h3>Flexible Voice Channels</h3>
+      <p>Join-to-create (JTC) voice channels that clean themselves up when empty — no more clutter of dead channels.</p>
+      <span class="tag">Join-to-Create</span>
+    </div>
+  </div>
+</section>
+
+<section class="vs-section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">Fewer bots, more done</div>
+    <h2>Running too many bots at once?</h2>
+    <p>Every extra bot is another permission grant, another point of failure. Wuys Bot rolls it into one.</p>
+  </div>
+
+  <div class="vs-list">
+    <div class="vs-row">
+      <div class="vs-need">Need <b>Honeypot</b> to trap spam / raids?<span class="instead">instead of adding Honeypot</span></div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot has Death Hallway built in</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Need full <b>Moderation</b> for your server?</div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot has that too</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Need <b>Join To Create VC</b>?<span class="instead">instead of adding EmpyManager</span></div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot does it, and cleans up empty channels</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Want a <b>fun</b> bot with a bit of "gambling" for laughs?</div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot can do that</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Need <b>Role Reaction</b>?</div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot has that too</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Need detailed <b>Logging</b> per event type?</div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Wuys Bot has that too</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-need">Want to go <b>AFK in VC</b> without staying online 24/7?</div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-answer"><span class="check">✓</span> Only Wuys Bot can do that</div>
+    </div>
+  </div>
+
+  <div class="spotlight">
+    <div class="spotlight-inner">
+      <div class="spotlight-tag">✦ Most important part</div>
+      <h3>100% free customization — name, banner, and avatar, matched to your server.</h3>
+      <p>
+        Most bots charge you to rebrand their name or avatar to fit your server.
+        Wuys Bot doesn't — the bot's whole identity is yours to customize,
+        no limits, no fees.
+      </p>
+      <div class="spotlight-chips">
+        <div class="chip">🏷️ Rename the bot <span class="price">free</span></div>
+        <div class="chip">🖼️ Change avatar <span class="price">free</span></div>
+        <div class="chip">🎨 Change banner <span class="price">free</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stack-section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">Recommended for small / mid servers</div>
+    <h2>Running a 50–100 member server? 4 bots is enough.</h2>
+  </div>
+
+  <div class="stack-wrap">
+    <p class="stack-blurb">
+      You don't need a dozen bots to cover everything. For a small to mid-sized server,
+      <b>Wuys Bot + ECHO + Jockie Music (2 bots)</b> is a lean stack that covers everything
+      you need without overlapping permissions or duplicate commands.
+    </p>
+
+    <div class="stack-row">
+      <div class="stack-card highlight">
+        <div class="stack-icon">🧩</div>
+        <h4>Wuys Bot</h4>
+        <p>Mod, logging, tickets, welcome, economy & VC</p>
+      </div>
+      <div class="stack-plus">+</div>
+      <div class="stack-card">
+        <div class="stack-icon">📣</div>
+        <h4>ECHO</h4>
+        <p>Server security & raid protection</p>
+      </div>
+      <div class="stack-plus">+</div>
+      <div class="stack-card">
+        <div class="stack-icon">🎵</div>
+        <h4>Jockie Music</h4>
+        <p>Primary music bot</p>
+      </div>
+      <div class="stack-plus">+</div>
+      <div class="stack-card">
+        <div class="stack-icon">🎵</div>
+        <h4>Jockie Music</h4>
+        <p>Backup music bot</p>
+      </div>
+    </div>
+
+    <div class="stack-footnote">
+      <span class="foot-pill">✓ covers everything you need</span>
+      <span class="foot-pill">✓ no permission overlap</span>
+      <span class="foot-pill">✓ light for 50–100 member servers</span>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="cta-glass">
+    <h2>Ready to upgrade your server?</h2>
+    <p>Add Wuys Bot in seconds — no complicated setup needed to get started.</p>
+    <a href="https://discord.com/oauth2/authorize?client_id=1510135549573206036&permissions=8&scope=bot%20applications.commands" class="btn-primary" id="addBotBtn2" target="_blank" rel="noopener">
+      <span>➕</span> Add bot to server
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    Developed by <span class="dev-tag">@ne8d</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://wuysbot.eu.cc/tos" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="https://wuysbot.eu.cc/privacypolicy" target="_blank" rel="noopener">Privacy Policy</a>
+  </div>
+</footer>
+
+<script>
+  // ambient orb parallax following cursor
+  const orb1 = document.getElementById('orb1');
+  const orb2 = document.getElementById('orb2');
+  let raf = null;
+  window.addEventListener('mousemove', (e) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 40;
+      const y = (e.clientY / window.innerHeight - 0.5) * 40;
+      orb1.style.transform = `translate(${x}px, ${y}px)`;
+      orb2.style.transform = `translate(${-x}px, ${-y}px)`;
+      raf = null;
+    });
+  });
+
+  // scroll reveal for cards, comparison rows, and spotlight
+  const revealTargets = document.querySelectorAll('.card, .vs-row, .spotlight, .stack-card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('in-view'), i % 3 * 90);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealTargets.forEach(c => io.observe(c));
+
+  // smooth page-transition veil on internal nav links
+  const veil = document.getElementById('veil');
+  document.querySelectorAll('[data-nav]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          veil.classList.add('active');
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'instant', block: 'start' });
+            veil.classList.remove('active');
+          }, 480);
+        }
+      }
+    });
+  });
+
+  // Add Bot buttons — small press effect on click
+  document.querySelectorAll('#addBotBtn, #addBotBtn2').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.style.transform = 'scale(0.97)';
+      setTimeout(() => btn.style.transform = '', 150);
+    });
+  });
+</script>
+
+</body>
+</html>
