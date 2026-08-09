@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Wuys Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0b14;
+    --ink-0:#f2f1fb;
+    --ink-1:#a6a8c7;
+    --ink-2:#6c6e93;
+    --blurple:#5865F2;
+    --violet:#9b6bf2;
+    --cyan:#5dd8e2;
+    --glass-border:rgba(255,255,255,0.09);
+    --glass-fill:rgba(255,255,255,0.045);
+    --radius:20px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 600px at 15% -10%, #2a2470 0%, transparent 60%),
+      radial-gradient(ellipse 800px 700px at 90% 5%, #0e3a4a 0%, transparent 55%),
+      var(--bg-0);
+    background-attachment:fixed;
+    color:var(--ink-0);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px clamp(20px,5vw,64px);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    background:rgba(10,11,20,0.55);
+    border-bottom:1px solid var(--glass-border);
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:-0.01em;
+    text-decoration:none;
+    color:var(--ink-0);
+  }
+  .brand-mark{
+    width:30px;height:30px;
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.95rem;
+    box-shadow:0 0 22px rgba(88,101,242,0.55);
+    flex-shrink:0;
+  }
+  .back-link{
+    font-family:'Inter',sans-serif;
+    font-size:0.85rem;
+    font-weight:500;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:8px 16px;
+    border-radius:999px;
+    text-decoration:none;
+    transition:all .25s ease;
+  }
+  .back-link:hover{
+    color:var(--ink-0);
+    background:rgba(255,255,255,0.09);
+    border-color:rgba(255,255,255,0.18);
+  }
+
+  /* ---------- layout ---------- */
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:960px;
+    margin:0 auto;
+    padding:64px clamp(20px,5vw,64px) 120px;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:56px;
+    align-items:start;
+  }
+
+  .doc-header{
+    grid-column:1 / -1;
+    margin-bottom:8px;
+  }
+  .doc-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--cyan);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .doc-eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);
+  }
+  h1.doc-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.1rem,5vw,3rem);
+    letter-spacing:-0.02em;
+    line-height:1.08;
+    margin-bottom:14px;
+  }
+  .doc-updated{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+    color:var(--ink-2);
+  }
+  .doc-intro{
+    color:var(--ink-1);
+    font-size:0.98rem;
+    line-height:1.75;
+    margin-top:20px;
+    max-width:640px;
+  }
+
+  /* ---------- sidebar toc ---------- */
+  .toc{
+    position:sticky;
+    top:90px;
+    padding:22px 20px;
+    border-radius:16px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    max-height:calc(100vh - 110px);
+    overflow-y:auto;
+  }
+  .toc-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    color:var(--ink-2);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .toc a{
+    display:block;
+    font-size:0.83rem;
+    color:var(--ink-1);
+    text-decoration:none;
+    padding:6px 0;
+    border-left:2px solid transparent;
+    padding-left:12px;
+    margin-left:-13px;
+    transition:all .2s ease;
+    line-height:1.4;
+  }
+  .toc a:hover{
+    color:var(--ink-0);
+    border-left-color:var(--violet);
+  }
+
+  /* ---------- content ---------- */
+  .content{min-width:0;}
+  .clause{
+    padding:30px 0;
+    border-bottom:1px solid var(--glass-border);
+    scroll-margin-top:90px;
+  }
+  .clause:last-child{border-bottom:none;}
+  .clause h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:1.25rem;
+    letter-spacing:-0.01em;
+    margin-bottom:14px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .clause h2 .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+    color:var(--violet);
+    font-weight:500;
+  }
+  .clause h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    color:var(--ink-0);
+    margin:22px 0 10px;
+  }
+  .clause h3:first-of-type{margin-top:4px;}
+  .clause p{
+    color:var(--ink-1);
+    font-size:0.96rem;
+    line-height:1.75;
+    margin-bottom:12px;
+  }
+  .clause p:last-child{margin-bottom:0;}
+  .clause ul{
+    list-style:none;
+    margin:14px 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .clause li{
+    position:relative;
+    padding-left:20px;
+    color:var(--ink-1);
+    font-size:0.94rem;
+    line-height:1.65;
+  }
+  .clause li::before{
+    content:"";
+    position:absolute;
+    left:0;top:0.55em;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+  }
+  .clause li b, .clause p b{
+    color:var(--ink-0);
+    font-weight:600;
+  }
+  .clause code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85em;
+    color:var(--cyan);
+    background:rgba(93,216,226,0.08);
+    border:1px solid rgba(93,216,226,0.18);
+    padding:1px 6px;
+    border-radius:5px;
+  }
+
+  /* data-use table */
+  .table-wrap{
+    margin-top:16px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:var(--glass-fill);
+    overflow-x:auto;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:560px;
+  }
+  thead th{
+    text-align:left;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-2);
+    padding:14px 18px;
+    border-bottom:1px solid var(--glass-border);
+  }
+  tbody td{
+    padding:14px 18px;
+    font-size:0.87rem;
+    color:var(--ink-1);
+    border-bottom:1px solid var(--glass-border);
+    line-height:1.5;
+    vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody td:first-child{
+    color:var(--ink-0);
+    font-weight:600;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.86rem;
+    white-space:nowrap;
+  }
+
+  /* callout */
+  .callout{
+    margin-top:16px;
+    padding:18px 20px;
+    border-radius:14px;
+    background:linear-gradient(135deg, rgba(88,101,242,0.1), rgba(155,107,242,0.06));
+    border:1px solid rgba(255,255,255,0.12);
+  }
+  .callout-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--cyan);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    display:block;
+  }
+
+  /* contact card */
+  .contact-card{
+    margin-top:16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .contact-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px;
+    border-radius:12px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+  }
+  .contact-row .icon{
+    width:34px;height:34px;
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    flex-shrink:0;
+  }
+  .contact-row .meta{
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    min-width:0;
+  }
+  .contact-row .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--ink-2);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+  }
+  .contact-row a{
+    color:var(--ink-0);
+    text-decoration:none;
+    font-size:0.92rem;
+    word-break:break-word;
+  }
+  .contact-row a:hover{color:var(--cyan);}
+
+  /* ---------- footer ---------- */
+  footer{
+    position:relative;
+    z-index:1;
+    padding:36px clamp(20px,5vw,64px) 44px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:1px solid var(--glass-border);
+    max-width:960px;
+    margin:0 auto;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .footer-left{
+    display:flex;align-items:center;gap:10px;
+    color:var(--ink-2);
+    font-size:0.85rem;
+  }
+  .dev-tag{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:5px 12px;
+    border-radius:8px;
+    font-size:0.8rem;
+  }
+  .footer-links{display:flex;gap:22px;}
+  .footer-links a{
+    color:var(--ink-2);
+    text-decoration:none;
+    font-size:0.85rem;
+    transition:color .2s ease;
+  }
+  .footer-links a:hover{color:var(--ink-0);}
+  .footer-links a.current{color:var(--ink-0);}
+
+  .disclaimer{
+    grid-column:1 / -1;
+    margin-top:4px;
+    padding-top:24px;
+    border-top:1px dashed var(--glass-border);
+    color:var(--ink-2);
+    font-size:0.82rem;
+    line-height:1.6;
+    font-style:italic;
+  }
+
+  @media (max-width:760px){
+    .wrap{grid-template-columns:1fr;}
+    .toc{position:static;max-height:none;margin-bottom:8px;}
+  }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="brand">
+    <div class="brand-mark">W</div>
+    Wuys Bot
+  </a>
+  <a href="index.html" class="back-link">← Back to home</a>
+</div>
+
+<div class="wrap">
+  <div class="doc-header">
+    <div class="doc-eyebrow"><span class="dot"></span> Legal</div>
+    <h1 class="doc-title">Privacy Policy</h1>
+    <div class="doc-updated">Last updated August 09, 2026</div>
+    <p class="doc-intro">
+      This Privacy Policy explains how Wuys Bot ("Bot", "We", "Us", or "Our") collects, uses, stores,
+      and protects your data when you use our Bot on Discord. We are committed to protecting your
+      privacy and handling your data transparently and securely.
+    </p>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <a href="#collect">1. Information We Collect</a>
+    <a href="#use">2. How We Use Your Data</a>
+    <a href="#storage">3. Data Storage</a>
+    <a href="#sharing">4. Sharing & Disclosure</a>
+    <a href="#rights">5. Your Rights & Choices</a>
+    <a href="#security">6. Data Security</a>
+    <a href="#children">7. Children's Privacy</a>
+    <a href="#thirdparty">8. Third-Party Services</a>
+    <a href="#cookies">9. Cookies & Tracking</a>
+    <a href="#intl">10. International Transfers</a>
+    <a href="#changes">11. Changes to This Policy</a>
+    <a href="#contact">12. Contact Information</a>
+    <a href="#ack">13. Acknowledgment</a>
+  </nav>
+
+  <div class="content">
+
+    <section class="clause" id="collect">
+      <h2><span class="num">01</span> Information We Collect</h2>
+      <p>Wuys Bot collects and stores the following types of data:</p>
+
+      <h3>1.1 User Data</h3>
+      <ul>
+        <li><b>User ID:</b> your unique Discord identifier, used to associate your account with features like economy balances, warnings, marriages, and cooldowns.</li>
+        <li><b>Username and Display Name:</b> stored temporarily for display purposes in logs and messages.</li>
+        <li><b>Avatar URL:</b> used for embeds and welcome/goodbye messages.</li>
+        <li><b>Voice State Information:</b> used for Join-to-Create (JTC) voice channel management.</li>
+      </ul>
+
+      <h3>1.2 Server (Guild) Data</h3>
+      <ul>
+        <li><b>Guild ID:</b> used to store server-specific settings and configurations.</li>
+        <li><b>Channel IDs:</b> used to store log channels, welcome channels, ticket panels, and JTC trigger channels.</li>
+        <li><b>Role IDs:</b> used for auto-roles, reaction roles, and ticket staff roles.</li>
+        <li><b>Message IDs:</b> used for reaction role panels and giveaway tracking.</li>
+      </ul>
+
+      <h3>1.3 Content Data</h3>
+      <ul>
+        <li><b>Message Content:</b> temporarily processed for mention responses (personality replies when the Bot is mentioned), logging (deleted/edited messages sent to configured channels), and ticket transcripts (full message history saved as HTML for moderation purposes).</li>
+        <li><b>Command Inputs:</b> user-provided arguments for commands (e.g., warning reasons, giveaway prizes, custom messages).</li>
+      </ul>
+
+      <h3>1.4 Economy Data</h3>
+      <ul>
+        <li><b>Wuys Coins (WC) Balance:</b> wallet and bank balances are stored per user.</li>
+        <li><b>Cooldown Timestamps:</b> daily and work command cooldowns are tracked to prevent abuse.</li>
+        <li><b>Casino Statistics:</b> wins and losses for casino games are recorded.</li>
+        <li><b>Transaction History:</b> not stored in detail, but changes to balances are logged internally for administrative purposes.</li>
+      </ul>
+
+      <h3>1.5 Relationship Data</h3>
+      <ul>
+        <li><b>Marriages:</b> active marriage relationships between users.</li>
+        <li><b>Slave Relations:</b> roleplay slave-master relationships (for entertainment purposes only).</li>
+      </ul>
+
+      <h3>1.6 Customization Data</h3>
+      <ul>
+        <li><b>Bot Customization:</b> per-server bio, avatar, banner, and nickname settings.</li>
+        <li><b>Welcome/Goodbye Messages:</b> custom templates stored per server.</li>
+        <li><b>Log Settings:</b> per-guild log channel configuration and per-category toggles.</li>
+      </ul>
+    </section>
+
+    <section class="clause" id="use">
+      <h2><span class="num">02</span> How We Use Your Data</h2>
+      <p>Your data is used exclusively to operate and improve the Bot's features:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Data Used</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Moderation</td><td>User IDs, warning reasons, timestamps</td><td>Tracking warnings and disciplinary actions</td></tr>
+            <tr><td>Logging</td><td>Message content, user IDs, channel IDs</td><td>Recording server events for transparency and moderation</td></tr>
+            <tr><td>Tickets</td><td>User IDs, message history</td><td>Creating support channels and generating transcripts</td></tr>
+            <tr><td>Economy</td><td>User IDs, balances, cooldowns</td><td>Managing virtual currency and casino games</td></tr>
+            <tr><td>Welcome/Goodbye</td><td>User IDs, guild IDs, custom templates</td><td>Sending automated join/leave messages</td></tr>
+            <tr><td>Voice Channels</td><td>User IDs, voice states</td><td>Creating and managing JTC voice channels</td></tr>
+            <tr><td>Fun Commands</td><td>User IDs, cached values</td><td>Providing personalized entertainment (e.g., /checkgay)</td></tr>
+            <tr><td>Customization</td><td>Guild IDs, user IDs, bio content</td><td>Storing per-server bot customization</td></tr>
+            <tr><td>Mention Responses</td><td>User IDs, message content, channel IDs</td><td>Responding to mentions with personality features</td></tr>
+            <tr><td>Death Hallway</td><td>Channel IDs, user IDs</td><td>Enforcing server-specific anti-spam rules</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="clause" id="storage">
+      <h2><span class="num">03</span> Data Storage</h2>
+      <h3>3.1 Storage Methods</h3>
+      <ul>
+        <li><b>SQLite Database</b> (<code>wuys.db</code>): stores structured data such as warnings, settings, tickets, reaction roles, and giveaways.</li>
+        <li><b>JSON Files</b> (<code>/casinodata/</code>): stores economy data (balances, cooldowns, statistics) per user.</li>
+        <li><b>File System:</b> stores logs (<code>/logs/wuys.log</code>), ticket HTML transcripts (<code>/transcripts/ticket_*.html</code>), and assets — bot avatar, banner, and meme files (user-uploaded).</li>
+      </ul>
+
+      <h3>3.2 Storage Location</h3>
+      <p>All data is stored on the server hosting the Bot. Data is not stored on third-party cloud services unless explicitly stated.</p>
+
+      <h3>3.3 Data Retention</h3>
+      <ul>
+        <li><b>Warnings:</b> retained indefinitely for moderation purposes unless manually deleted by an administrator.</li>
+        <li><b>Economy Data:</b> retained until the user requests deletion or the account becomes inactive.</li>
+        <li><b>Logs:</b> retained for 30–90 days (depending on server configuration) for troubleshooting and moderation.</li>
+        <li><b>Ticket Transcripts:</b> retained indefinitely unless deleted by server administrators.</li>
+      </ul>
+    </section>
+
+    <section class="clause" id="sharing">
+      <h2><span class="num">04</span> Data Sharing and Disclosure</h2>
+      <h3>4.1 Third-Party Access</h3>
+      <p>We do not sell, trade, or rent your personal data to third parties. Your data is only accessible to:</p>
+      <ul>
+        <li><b>Bot Owner/Developer:</b> for maintenance, debugging, and support.</li>
+        <li><b>Server Administrators:</b> they can view logs, warnings, and ticket transcripts on their own servers.</li>
+        <li><b>Discord:</b> as required to process commands and interact with the Discord API.</li>
+      </ul>
+
+      <h3>4.2 Legal Compliance</h3>
+      <p>We may disclose your data if required by law or in response to valid legal requests (e.g., court orders, government regulations).</p>
+    </section>
+
+    <section class="clause" id="rights">
+      <h2><span class="num">05</span> Your Rights and Choices</h2>
+      <h3>5.1 Right to Access</h3>
+      <p>You can view your own data through commands like <code>/balance</code>, <code>/warnings</code>, and <code>/userinfo</code>. Server administrators can view more extensive logs and settings.</p>
+
+      <h3>5.2 Right to Rectification</h3>
+      <p>You can update your preferences using commands like <code>/customize</code> (for server admins) or by reconfiguring settings.</p>
+
+      <h3>5.3 Right to Deletion</h3>
+      <p>You may request deletion of your data by contacting the Bot Owner via Discord with your request, or by asking a server administrator to manually delete warnings, tickets, and other server-specific data.</p>
+      <div class="callout">
+        <span class="callout-tag">Response time</span>
+        <p style="margin-bottom:0;">Upon verified request, we will delete all personally identifiable data related to you within 14 days.</p>
+      </div>
+
+      <h3 style="margin-top:24px;">5.4 Right to Withdraw Consent</h3>
+      <p>You may withdraw your consent to data processing by removing the Bot from your server or ceasing to use its features.</p>
+    </section>
+
+    <section class="clause" id="security">
+      <h2><span class="num">06</span> Data Security</h2>
+      <p>We take reasonable measures to protect your data:</p>
+      <ul>
+        <li><b>Database Encryption:</b> the SQLite database is not encrypted by default, but access is restricted to the Bot process.</li>
+        <li><b>File Permissions:</b> sensitive folders (<code>/casinodata/</code>, <code>/logs/</code>, <code>/transcripts/</code>) are restricted from public access.</li>
+        <li><b>Logging:</b> all administrative actions are logged for accountability.</li>
+        <li><b>Regular Backups:</b> data is backed up regularly to prevent loss (frequency depends on server configuration).</li>
+      </ul>
+      <p style="margin-top:16px;">However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your data, we cannot guarantee absolute security.</p>
+    </section>
+
+    <section class="clause" id="children">
+      <h2><span class="num">07</span> Children's Privacy</h2>
+      <p>Wuys Bot is not intended for children under the age of 13 (or the applicable age of consent in your jurisdiction). We do not knowingly collect personal information from children under 13. If we become aware that we have collected data from a child under 13, we will delete it immediately.</p>
+      <div class="callout">
+        <span class="callout-tag">Note on underage users</span>
+        <p style="margin-bottom:0;">While our Economy and Casino features use virtual currency with no real-world value, we strongly discourage users under 18 from using these features for responsible gaming practices.</p>
+      </div>
+    </section>
+
+    <section class="clause" id="thirdparty">
+      <h2><span class="num">08</span> Third-Party Services</h2>
+      <p>Wuys Bot may interact with third-party services through:</p>
+      <ul>
+        <li><b>Discord API:</b> all interactions are processed through Discord's official API.</li>
+        <li><b>External Assets:</b> the Bot may load images or files from external URLs (e.g., user avatars, custom emojis).</li>
+        <li><b>Webhooks:</b> for logging, webhook URLs are stored to send messages to configured channels.</li>
+      </ul>
+      <p style="margin-top:16px;">We are not responsible for the privacy practices of third-party services. Please review their respective privacy policies.</p>
+    </section>
+
+    <section class="clause" id="cookies">
+      <h2><span class="num">09</span> Cookies and Tracking</h2>
+      <p>Wuys Bot does not use cookies, browser tracking, or any similar tracking technologies. Data is stored server-side and processed only for Bot functionality.</p>
+    </section>
+
+    <section class="clause" id="intl">
+      <h2><span class="num">10</span> International Data Transfers</h2>
+      <p>If you are located outside the country where the Bot is hosted, your data may be transferred to and processed in that country. By using the Bot, you consent to this transfer.</p>
+    </section>
+
+    <section class="clause" id="changes">
+      <h2><span class="num">11</span> Changes to This Privacy Policy</h2>
+      <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated "Last Updated" date. We encourage you to review this policy periodically. Continued use of the Bot after changes constitute your acceptance of the updated policy.</p>
+    </section>
+
+    <section class="clause" id="contact">
+      <h2><span class="num">12</span> Contact Information</h2>
+      <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact:</p>
+      <div class="contact-card">
+        <div class="contact-row">
+          <div class="icon">👤</div>
+          <div class="meta">
+            <span class="label">Bot Owner</span>
+            <span style="color:var(--ink-0); font-size:0.92rem;">Wuys — Discord: @ne8d</span>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="icon">✉️</div>
+          <div class="meta">
+            <span class="label">Email</span>
+            <a href="mailto:duaadu32@gmail.com">duaadu32@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="icon">💬</div>
+          <div class="meta">
+            <span class="label">Support Server</span>
+            <a href="https://discord.gg/pfYMXp7puB" target="_blank" rel="noopener">discord.gg/pfYMXp7puB</a>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:16px;">We will respond to your inquiry within 7 business days.</p>
+    </section>
+
+    <section class="clause" id="ack">
+      <h2><span class="num">13</span> Acknowledgment</h2>
+      <p>By using Wuys Bot, you acknowledge that you have read and understood this Privacy Policy and agree to the collection, use, and storage of your data as described herein.</p>
+    </section>
+
+  </div>
+
+  <p class="disclaimer">
+    Disclaimer: this Privacy Policy is provided for informational purposes and does not constitute legal advice. For formal legal guidance, please consult a qualified attorney.
+  </p>
+</div>
+
+<footer>
+  <div class="footer-left">
+    Developed by <span class="dev-tag">@ne8d</span>
+  </div>
+  <div class="footer-links">
+    <a href="tos.html">Terms of Service</a>
+    <a href="privacypolicy.html" class="current">Privacy Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>

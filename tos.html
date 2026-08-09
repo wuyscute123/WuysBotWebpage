@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Wuys Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0b14;
+    --ink-0:#f2f1fb;
+    --ink-1:#a6a8c7;
+    --ink-2:#6c6e93;
+    --blurple:#5865F2;
+    --violet:#9b6bf2;
+    --cyan:#5dd8e2;
+    --glass-border:rgba(255,255,255,0.09);
+    --glass-fill:rgba(255,255,255,0.045);
+    --radius:20px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 600px at 15% -10%, #2a2470 0%, transparent 60%),
+      radial-gradient(ellipse 800px 700px at 90% 5%, #0e3a4a 0%, transparent 55%),
+      var(--bg-0);
+    background-attachment:fixed;
+    color:var(--ink-0);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px clamp(20px,5vw,64px);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    background:rgba(10,11,20,0.55);
+    border-bottom:1px solid var(--glass-border);
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:-0.01em;
+    text-decoration:none;
+    color:var(--ink-0);
+  }
+  .brand-mark{
+    width:30px;height:30px;
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.95rem;
+    box-shadow:0 0 22px rgba(88,101,242,0.55);
+    flex-shrink:0;
+  }
+  .back-link{
+    font-family:'Inter',sans-serif;
+    font-size:0.85rem;
+    font-weight:500;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:8px 16px;
+    border-radius:999px;
+    text-decoration:none;
+    transition:all .25s ease;
+  }
+  .back-link:hover{
+    color:var(--ink-0);
+    background:rgba(255,255,255,0.09);
+    border-color:rgba(255,255,255,0.18);
+  }
+
+  /* ---------- layout ---------- */
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:920px;
+    margin:0 auto;
+    padding:64px clamp(20px,5vw,64px) 120px;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:56px;
+    align-items:start;
+  }
+
+  /* ---------- header block ---------- */
+  .doc-header{
+    grid-column:1 / -1;
+    margin-bottom:8px;
+  }
+  .doc-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:var(--cyan);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .doc-eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);
+  }
+  h1.doc-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.1rem,5vw,3rem);
+    letter-spacing:-0.02em;
+    line-height:1.08;
+    margin-bottom:14px;
+  }
+  .doc-updated{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.82rem;
+    color:var(--ink-2);
+  }
+
+  /* ---------- sidebar toc ---------- */
+  .toc{
+    position:sticky;
+    top:90px;
+    padding:22px 20px;
+    border-radius:16px;
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+  }
+  .toc-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    color:var(--ink-2);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .toc a{
+    display:block;
+    font-size:0.85rem;
+    color:var(--ink-1);
+    text-decoration:none;
+    padding:7px 0;
+    border-left:2px solid transparent;
+    padding-left:12px;
+    margin-left:-13px;
+    transition:all .2s ease;
+    line-height:1.4;
+  }
+  .toc a:hover{
+    color:var(--ink-0);
+    border-left-color:var(--violet);
+  }
+
+  /* ---------- content ---------- */
+  .content{
+    min-width:0;
+  }
+  .clause{
+    padding:30px 0;
+    border-bottom:1px solid var(--glass-border);
+    scroll-margin-top:90px;
+  }
+  .clause:last-child{border-bottom:none;}
+  .clause h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:1.25rem;
+    letter-spacing:-0.01em;
+    margin-bottom:14px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .clause h2 .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85rem;
+    color:var(--violet);
+    font-weight:500;
+  }
+  .clause p{
+    color:var(--ink-1);
+    font-size:0.96rem;
+    line-height:1.75;
+    margin-bottom:12px;
+  }
+  .clause p:last-child{margin-bottom:0;}
+  .clause ul{
+    list-style:none;
+    margin:14px 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .clause li{
+    position:relative;
+    padding-left:20px;
+    color:var(--ink-1);
+    font-size:0.94rem;
+    line-height:1.65;
+  }
+  .clause li::before{
+    content:"";
+    position:absolute;
+    left:0;top:0.55em;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blurple),var(--violet));
+  }
+  .clause li b, .clause p b{
+    color:var(--ink-0);
+    font-weight:600;
+  }
+  .clause code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85em;
+    color:var(--cyan);
+    background:rgba(93,216,226,0.08);
+    border:1px solid rgba(93,216,226,0.18);
+    padding:1px 6px;
+    border-radius:5px;
+  }
+
+  /* callout for age/risk clause */
+  .callout{
+    margin-top:16px;
+    padding:18px 20px;
+    border-radius:14px;
+    background:linear-gradient(135deg, rgba(88,101,242,0.1), rgba(155,107,242,0.06));
+    border:1px solid rgba(255,255,255,0.12);
+  }
+  .callout-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--cyan);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    display:block;
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    position:relative;
+    z-index:1;
+    padding:36px clamp(20px,5vw,64px) 44px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:1px solid var(--glass-border);
+    max-width:920px;
+    margin:0 auto;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .footer-left{
+    display:flex;align-items:center;gap:10px;
+    color:var(--ink-2);
+    font-size:0.85rem;
+  }
+  .dev-tag{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--ink-1);
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    padding:5px 12px;
+    border-radius:8px;
+    font-size:0.8rem;
+  }
+  .footer-links{display:flex;gap:22px;}
+  .footer-links a{
+    color:var(--ink-2);
+    text-decoration:none;
+    font-size:0.85rem;
+    transition:color .2s ease;
+  }
+  .footer-links a:hover{color:var(--ink-0);}
+  .footer-links a.current{color:var(--ink-0);}
+
+  @media (max-width:760px){
+    .wrap{grid-template-columns:1fr;}
+    .toc{position:static;margin-bottom:8px;}
+  }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="brand">
+    <div class="brand-mark">W</div>
+    Wuys Bot
+  </a>
+  <a href="index.html" class="back-link">← Back to home</a>
+</div>
+
+<div class="wrap">
+  <div class="doc-header">
+    <div class="doc-eyebrow"><span class="dot"></span> Legal</div>
+    <h1 class="doc-title">Terms of Service</h1>
+    <div class="doc-updated">Last updated August 09, 2026</div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <a href="#acceptance">1. Acceptance of Terms</a>
+    <a href="#description">2. Description of Service</a>
+    <a href="#risk">3. Risk & Underage Users</a>
+    <a href="#rights">4. User & Admin Rights</a>
+    <a href="#prohibited">5. Prohibited Conduct</a>
+    <a href="#data">6. Data and Privacy</a>
+    <a href="#deletion">7. Data Deletion Requests</a>
+    <a href="#liability">8. Limitation of Liability</a>
+    <a href="#changes">9. Changes to Terms</a>
+    <a href="#contact">10. Contact</a>
+  </nav>
+
+  <div class="content">
+    <p style="color:var(--ink-1); font-size:0.98rem; line-height:1.75; margin-bottom:8px;">
+      Welcome to Wuys Bot (referred to below as "Bot", "We", or "Service"). By using the Bot on your
+      Discord server, you agree to comply with these Terms of Service. Please read them carefully
+      before using the Bot.
+    </p>
+
+    <section class="clause" id="acceptance">
+      <h2><span class="num">01</span> Acceptance of Terms</h2>
+      <p>By adding Wuys Bot to your Discord server or using any of the Bot's features, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree, please remove the Bot from your server immediately.</p>
+    </section>
+
+    <section class="clause" id="description">
+      <h2><span class="num">02</span> Description of Service</h2>
+      <p>Wuys Bot is a versatile Discord bot that provides a wide range of features, including:</p>
+      <ul>
+        <li><b>Moderation & Administration:</b> warnings (<code>/warn</code>), bans (<code>/ban</code>), kicks (<code>/kick</code>), message clearing (<code>/clear</code>), timeouts (<code>/timeout</code>).</li>
+        <li><b>Welcome & Goodbye Systems:</b> customizable welcome (<code>/setwelcome</code>) and goodbye (<code>/setgoodbye</code>) messages with variable placeholders.</li>
+        <li><b>Logging:</b> records events such as member join/leave, message delete/edit, bans/kicks, role changes, and more (<code>/setlog</code>, <code>/logtoggle</code>).</li>
+        <li><b>Ticket System:</b> creates private support channels (<code>/ticketpanel</code>).</li>
+        <li><b>Roles & Permissions:</b> auto-roles (<code>/autorole</code>) and reaction roles (<code>/reactionrole</code>).</li>
+        <li><b>Entertainment:</b> fun commands like <code>/rizz</code>, <code>/marry</code>, <code>/checkgay</code>, <code>/memes</code>, <code>/imgmemes</code>, <code>/snapchat</code>, <code>/genbarcodeusername</code>.</li>
+        <li><b>Economy & Casino:</b> Wuys Coins (WC) currency system with commands like <code>/daily</code>, <code>/work</code>, <code>/balance</code>, and games like <code>/blackjack</code>, <code>/slots</code>, <code>/penalty</code>, <code>/coinflipbet</code>.</li>
+        <li><b>Voice Channels:</b> Join-to-Create voice channels (<code>/setjtc</code>) and management commands (<code>/vc rename</code>, <code>/vc lock</code>, etc.).</li>
+        <li><b>Customization:</b> change the Bot's avatar, banner, nickname, and bio per server (<code>/customize</code>).</li>
+      </ul>
+    </section>
+
+    <section class="clause" id="risk">
+      <h2><span class="num">03</span> Acceptance of Risk & Underage Users</h2>
+      <div class="callout">
+        <span class="callout-tag">Age guidance</span>
+        <p style="margin-bottom:0;">The Economy and Casino systems use "Wuys Coins" — a virtual currency with no real-world value. However, for safety, we do not encourage users under 18 to use these features. Users under 13 are not permitted to use the Bot in accordance with Discord's Terms of Service.</p>
+      </div>
+      <p style="margin-top:16px;"><b>Risk:</b> the Bot may experience technical issues or disruptions due to Discord API changes. We are not responsible for any damages (data loss, role loss, etc.) resulting from the use of the Bot.</p>
+    </section>
+
+    <section class="clause" id="rights">
+      <h2><span class="num">04</span> User and Administrator Rights</h2>
+      <ul>
+        <li><b>End Users:</b> you have the right to use public commands of the Bot as long as you comply with these Terms.</li>
+        <li><b>Server Administrators:</b> you have full control over configuring the Bot on your server (setting log channels, ticket panels, etc.). You are responsible for how the Bot is used and configured on your server.</li>
+      </ul>
+    </section>
+
+    <section class="clause" id="prohibited">
+      <h2><span class="num">05</span> Prohibited Conduct</h2>
+      <p>When using the Bot, you must not:</p>
+      <ul>
+        <li>Use the Bot for any illegal, harassing, abusive, or discriminatory purposes, or in violation of Discord's Terms of Service.</li>
+        <li>Exploit bugs or vulnerabilities in the Bot for personal gain (e.g., obtaining Wuys Coins illegitimately).</li>
+        <li>Misuse administrative commands (e.g., <code>/ban</code>, <code>/kick</code>) unreasonably or to harass other users.</li>
+        <li>Attempt to interfere with the normal operation of the Bot or its infrastructure.</li>
+      </ul>
+      <p style="margin-top:16px;">We reserve the right to refuse service to anyone who violates these Terms.</p>
+    </section>
+
+    <section class="clause" id="data">
+      <h2><span class="num">06</span> Data and Privacy</h2>
+      <p><b>Data collected.</b> The Bot collects and stores the following data in its SQLite database and JSON files:</p>
+      <ul>
+        <li><b>User and Guild IDs:</b> to associate warnings, economy accounts, marriages, server settings, etc.</li>
+        <li><b>Message Content:</b> for logging purposes and ticket transcripts (stored as HTML files).</li>
+        <li><b>Economy Data:</b> wallet and bank balances, transaction history (cooldowns, casino statistics).</li>
+      </ul>
+      <p style="margin-top:16px;"><b>Purpose of use.</b> Data is used exclusively to operate the Bot's features (e.g., displaying balances, managing warnings, logging events).</p>
+      <p><b>Data sharing.</b> We do not sell, trade, or share your data with third parties, except for hosting service providers (if applicable).</p>
+      <p><b>Access rights.</b> You have the right to request deletion of your data from our system (see Section 7).</p>
+    </section>
+
+    <section class="clause" id="deletion">
+      <h2><span class="num">07</span> Data Deletion Requests</h2>
+      <p>If you wish to request the deletion of all your data from the Bot, please submit a request to the Bot Owner via Discord (usually the creator of the Bot). We will delete records related to you within a reasonable time frame after verifying your identity.</p>
+    </section>
+
+    <section class="clause" id="liability">
+      <h2><span class="num">08</span> Limitation of Liability</h2>
+      <ul>
+        <li>The Bot is provided "as-is" and we make no warranties regarding performance, accuracy, or continuous availability of the Service.</li>
+        <li>In no event shall we be liable for any direct, indirect, incidental, special, or consequential damages arising out of or in connection with the use or inability to use the Bot.</li>
+      </ul>
+    </section>
+
+    <section class="clause" id="changes">
+      <h2><span class="num">09</span> Changes to Terms</h2>
+      <p>We may update these Terms from time to time. Continued use of the Bot after changes become effective will be deemed as your acceptance of the new Terms. We encourage you to review this page periodically for updates.</p>
+    </section>
+
+    <section class="clause" id="contact">
+      <h2><span class="num">10</span> Contact</h2>
+      <p>If you have any questions or concerns about these Terms, please contact the Bot Owner on your Discord server or through the Bot's support channels.</p>
+    </section>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    Developed by <span class="dev-tag">@ne8d</span>
+  </div>
+  <div class="footer-links">
+    <a href="tos.html" class="current">Terms of Service</a>
+    <a href="privacypolicy.html">Privacy Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>
